@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jackpot</title>
+  <title>Random Text + Audio</title>
   <style>
     html, body {
       margin: 0;
@@ -13,27 +13,78 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
     }
 
     #text {
       color: white;
       font-size: clamp(24px, 5vw, 48px);
       text-align: center;
+      cursor: pointer;
+      font-family: "Times New Roman", Times, serif;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+    }
+
+    .active {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+      cursor: default;
+      font-size: clamp(32px, 7vw, 72px);
+    }
+
+    .hidden {
+      opacity: 0;
     }
   </style>
 </head>
 <body>
-  <div id="text"></div>
+  <div id="text">Click to play</div>
+
+  <audio id="audio" src="audio.mp3" loop></audio>
 
   <script>
+    const textEl = document.getElementById("text");
+    const audio = document.getElementById("audio");
+
     const phrases = [
       "I win, you lose",
       "You win, I lose"
     ];
 
-    const randomIndex = Math.floor(Math.random() * phrases.length);
-    document.getElementById("text").textContent = phrases[randomIndex];
+    function fadeInAudio(audioEl, duration = 2000) {
+      audioEl.volume = 0;
+      audioEl.play();
+
+      let step = 0.05;
+      let interval = duration * step;
+
+      const fade = setInterval(() => {
+        if (audioEl.volume < 1) {
+          audioEl.volume = Math.min(audioEl.volume + step, 1);
+        } else {
+          clearInterval(fade);
+        }
+      }, interval);
+    }
+
+    function startExperience() {
+      textEl.classList.add("hidden");
+
+      setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * phrases.length);
+        const selected = phrases[randomIndex];
+
+        textEl.textContent = selected;
+        textEl.classList.add("active");
+
+        textEl.classList.remove("hidden");
+
+        fadeInAudio(audio);
+      }, 500);
+
+      textEl.removeEventListener("click", startExperience);
+    }
+
+    textEl.addEventListener("click", startExperience);
   </script>
 </body>
 </html>
