@@ -5,101 +5,141 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Random Text + Audio</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: black;
+    /* --- VARIABILI --- */
+    :root {
+      --bg-color: #000000;
+      --text-color: #ffffff;
+      --transition-speed: 0.4s;
+      --font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      --font-serif: "Times New Roman", Times, serif;
     }
 
-    /* Contenitore centrato */
-    body {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
+    /* --- TESTO PRINCIPALE --- */
     #text {
       position: absolute;
-      color: white;
-      font-size: clamp(10px, 2vw, 18px);
+      color: var(--text-color);
+      font-family: var(--font-serif);
+      font-size: clamp(16px, 3vw, 24px);
       text-align: center;
       cursor: pointer;
-      font-family: "Times New Roman", Times, serif;
-      opacity: 1;
-      top: 65%; /* più in basso del centro */
+      width: 90%;
+      top: 65%;
       left: 50%;
       transform: translate(-50%, -50%);
-      transition: opacity 0.4s ease, top 0.4s ease, transform 0.4s ease;
+      transition: all var(--transition-speed) ease;
+      z-index: 2;
     }
 
-    /* Stato attivo: centro perfetto */
-    .active {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif !important;
-      font-size: clamp(48px, 10vw, 110px);
+    #text.active {
+      font-family: var(--font-sf);
+      font-weight: 700;
+      font-size: clamp(32px, 8vw, 110px);
       top: 50%;
-      transform: translate(-50%, -50%);
-      cursor: default;
+      cursor: pointer; /* Resta cliccabile per cambiare frase */
+    }
+
+    /* --- SCRITTA "PLAY AGAIN" (In basso) --- */
+    #footer-text {
+      position: absolute;
+      bottom: 10%; /* Posizionata in basso */
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-color);
+      font-family: var(--font-serif);
+      font-size: clamp(14px, 2vw, 18px);
+      text-align: center;
+      opacity: 0; /* Nascosta all'inizio */
+      transition: opacity 0.8s ease; /* Apparizione più dolce */
+      pointer-events: none;
+    }
+
+    #footer-text.visible {
+      opacity: 0.6; /* Leggermente trasparente per non distrarre troppo */
     }
 
     .hidden {
-      opacity: 0;
+      opacity: 0 !important;
     }
   </style>
 </head>
 <body>
+
+  <!-- Testo principale -->
   <div id="text">Click to play</div>
 
-  <audio id="audio" src="audio.mp3" loop></audio>
+  <!-- Testo secondario in basso -->
+  <div id="footer-text">click to play again</div>
+
+  <audio id="audio" src="audio.mp3" loop preload="auto"></audio>
 
   <script>
     const textEl = document.getElementById("text");
-    const audio = document.getElementById("audio");
+    const footerEl = document.getElementById("footer-text");
+    const audioEl = document.getElementById("audio");
 
-    const phrases = [
-      "I win, you lose",
-      "You win, I lose"
-    ];
+    const phrases = ["I win, you lose", "You win, I lose"];
+    let isStarted = false;
+    let isTransitioning = false;
 
-    let started = false;
-
-    function fadeInAudio(audioEl, duration = 2000) {
-      audioEl.volume = 0;
-      audioEl.play();
-
+    function fadeInAudio(audio, duration = 2000) {
+      audio.volume = 0;
+      audio.play().catch(() => {});
       let step = 0.05;
-      let interval = duration * step;
-
-      const fade = setInterval(() => {
-        if (audioEl.volume < 1) {
-          audioEl.volume = Math.min(audioEl.volume + step, 1);
-        } else {
-          clearInterval(fade);
-        }
-      }, interval);
+      const interval = setInterval(() => {
+        if (audio.volume < 1 - step) audio.volume += step;
+        else { audio.volume = 1; clearInterval(interval); }
+      }, duration * step);
     }
 
-    function randomizeText() {
-      const randomIndex = Math.floor(Math.random() * phrases.length);
-      textEl.textContent = phrases[randomIndex];
-    }
+    function handleInteraction() {
+      if (isTransitioning) return;
+      isTransitioning = true;
 
-    function handleClick() {
+      // Nascondi il testo principale per il cambio
       textEl.classList.add("hidden");
 
       setTimeout(() => {
-        if (!started) {
-          fadeInAudio(audio);
+        if (!isStarted) {
+          fadeInAudio(audioEl);
           textEl.classList.add("active");
-          started = true;
+          // Mostra la scritta in basso solo dopo il primo click
+          footerEl.classList.add("visible");
+          isStarted = true;
         }
 
-        randomizeText();
+        // Cambia frase casualmente
+        const randomIndex = Math.floor(Math.random() * phrases.length);
+        textEl.textContent = phrases[randomIndex];
+
+        // Mostra di nuovo il testo
         textEl.classList.remove("hidden");
-      }, 300);
+
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 400);
+      }, 400);
     }
 
-    document.body.addEventListener("click", handleClick);
+    // Cliccando ovunque sullo schermo si attiva l'interazione
+    document.body.addEventListener("click", handleInteraction);
   </script>
 </body>
 </html>
