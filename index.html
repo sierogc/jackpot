@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jackpot</title>
+  <title>Random Text + Audio</title>
   <style>
     html, body {
       margin: 0;
@@ -15,7 +15,7 @@
       justify-content: center;
     }
 
-    /* Stato iniziale: molto piccolo e leggermente più in basso */
+    /* Stato iniziale */
     #text {
       color: white;
       font-size: clamp(10px, 2vw, 18px);
@@ -27,11 +27,11 @@
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    /* Stato attivo: grande e centrato visivamente */
+    /* Stato attivo: CENTRATO, GRANDE, SF PRO */
     .active {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-      font-size: clamp(40px, 8.75vw, 90px);
-      transform: translateY(0);
+      font-size: clamp(48px, 10vw, 110px);
+      transform: translateY(0); /* perfettamente al centro */
     }
 
     .hidden {
@@ -91,7 +91,6 @@
       }, 300);
     }
 
-    // Click ovunque nella pagina
     document.body.addEventListener("click", handleClick);
   </script>
 </body>
