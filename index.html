@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jackpot</title>
   <style>
-    /* --- VARIABILI --- */
     :root {
       --bg-color: #000000;
       --text-color: #ffffff;
-      --transition-speed: 0.4s;
       --font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       --font-serif: "Times New Roman", Times, serif;
     }
@@ -37,58 +35,56 @@
       position: absolute;
       color: var(--text-color);
       font-family: var(--font-serif);
-      font-size: clamp(16px, 3vw, 24px);
+      /* Ridotto del 25% rispetto a prima (era 16px-24px) */
+      font-size: clamp(12px, 2.2vw, 18px); 
       text-align: center;
       cursor: pointer;
       width: 90%;
-      top: 65%;
       left: 50%;
       transform: translate(-50%, -50%);
-      transition: all var(--transition-speed) ease;
+      /* Posizionato leggermente più in alto (era 65%) */
+      top: 58%; 
       z-index: 2;
+      /* Nessuna transizione per il cambio testo/posizione */
     }
 
+    /* Stato quando appaiono le frasi Win/Lose */
     #text.active {
       font-family: var(--font-sf);
       font-weight: 700;
-      font-size: clamp(32px, 8vw, 110px);
-      top: 50%;
-      cursor: pointer; /* Resta cliccabile per cambiare frase */
+      /* Aumentato del 25% rispetto a prima (era 32px-110px) */
+      font-size: clamp(40px, 10vw, 138px);
+      top: 50%; /* Centro perfetto */
     }
 
-    /* --- SCRITTA "PLAY AGAIN" (In basso) --- */
+    /* --- SCRITTA "PLAY AGAIN" --- */
     #footer-text {
       position: absolute;
-      bottom: 10%; /* Posizionata in basso */
+      bottom: 10%;
       left: 50%;
       transform: translateX(-50%);
       color: var(--text-color);
       font-family: var(--font-serif);
       font-size: clamp(14px, 2vw, 18px);
       text-align: center;
-      opacity: 0; /* Nascosta all'inizio */
-      transition: opacity 0.8s ease; /* Apparizione più dolce */
+      opacity: 0;
+      transition: opacity 0.5s ease;
       pointer-events: none;
     }
 
     #footer-text.visible {
-      opacity: 0.6; /* Leggermente trasparente per non distrarre troppo */
+      opacity: 0.6;
     }
 
-    .hidden {
-      opacity: 0 !important;
-    }
+    /* Rimosso l'effetto di dissolvenza (hidden) per il testo principale */
   </style>
 </head>
 <body>
 
-  <!-- Testo principale -->
   <div id="text">Click to play</div>
+  <div id="footer-text">click to play again</div>
 
-  <!-- Testo secondario in basso -->
-  <div id="footer-text">Click to play again</div>
-
-  <audio id="audio" src="audio.mp3" loop preload="auto"></audio>
+  <audio id="audio" src="audio.mp3" preload="auto"></audio>
 
   <script>
     const textEl = document.getElementById("text");
@@ -97,48 +93,28 @@
 
     const phrases = ["I win, you lose", "You win, I lose"];
     let isStarted = false;
-    let isTransitioning = false;
 
-    function fadeInAudio(audio, duration = 2000) {
-      audio.volume = 0;
-      audio.play().catch(() => {});
-      let step = 0.05;
-      const interval = setInterval(() => {
-        if (audio.volume < 1 - step) audio.volume += step;
-        else { audio.volume = 1; clearInterval(interval); }
-      }, duration * step);
+    function playAudioReset() {
+      audioEl.currentTime = 0;
+      audioEl.volume = 1; 
+      audioEl.play().catch(() => {});
     }
 
     function handleInteraction() {
-      if (isTransitioning) return;
-      isTransitioning = true;
+      // Audio istantaneo al click
+      playAudioReset();
 
-      // Nascondi il testo principale per il cambio
-      textEl.classList.add("hidden");
+      if (!isStarted) {
+        textEl.classList.add("active");
+        footerEl.classList.add("visible");
+        isStarted = true;
+      }
 
-      setTimeout(() => {
-        if (!isStarted) {
-          fadeInAudio(audioEl);
-          textEl.classList.add("active");
-          // Mostra la scritta in basso solo dopo il primo click
-          footerEl.classList.add("visible");
-          isStarted = true;
-        }
-
-        // Cambia frase casualmente
-        const randomIndex = Math.floor(Math.random() * phrases.length);
-        textEl.textContent = phrases[randomIndex];
-
-        // Mostra di nuovo il testo
-        textEl.classList.remove("hidden");
-
-        setTimeout(() => {
-          isTransitioning = false;
-        }, 400);
-      }, 400);
+      // Cambio frase istantaneo senza animazione
+      const randomIndex = Math.floor(Math.random() * phrases.length);
+      textEl.textContent = phrases[randomIndex];
     }
 
-    // Cliccando ovunque sullo schermo si attiva l'interazione
     document.body.addEventListener("click", handleInteraction);
   </script>
 </body>
