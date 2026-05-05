@@ -15,9 +15,10 @@
       justify-content: center;
     }
 
+    /* Stato iniziale */
     #text {
       color: white;
-      font-size: clamp(24px, 5vw, 48px);
+      font-size: clamp(14px, 3vw, 28px); /* ~60% più piccolo */
       text-align: center;
       cursor: pointer;
       font-family: "Times New Roman", Times, serif;
@@ -25,10 +26,11 @@
       transition: opacity 0.6s ease;
     }
 
+    /* Stato attivo */
     .active {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
       cursor: default;
-      font-size: clamp(32px, 7vw, 72px);
+      font-size: clamp(40px, 8.75vw, 90px); /* ~25% più grande rispetto a prima */
     }
 
     .hidden {
