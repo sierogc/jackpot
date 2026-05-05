@@ -15,22 +15,23 @@
       justify-content: center;
     }
 
-    /* Stato iniziale */
+    /* Stato iniziale: molto piccolo e leggermente più in basso */
     #text {
       color: white;
-      font-size: clamp(14px, 3vw, 28px); /* ~60% più piccolo */
+      font-size: clamp(10px, 2vw, 18px);
       text-align: center;
       cursor: pointer;
       font-family: "Times New Roman", Times, serif;
       opacity: 1;
-      transition: opacity 0.6s ease;
+      transform: translateY(20vh);
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    /* Stato attivo */
+    /* Stato attivo: grande e centrato visivamente */
     .active {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-      cursor: default;
-      font-size: clamp(40px, 8.75vw, 90px); /* ~25% più grande rispetto a prima */
+      font-size: clamp(40px, 8.75vw, 90px);
+      transform: translateY(0);
     }
 
     .hidden {
@@ -52,6 +53,8 @@
       "You win, I lose"
     ];
 
+    let started = false;
+
     function fadeInAudio(audioEl, duration = 2000) {
       audioEl.volume = 0;
       audioEl.play();
@@ -68,25 +71,28 @@
       }, interval);
     }
 
-    function startExperience() {
+    function randomizeText() {
+      const randomIndex = Math.floor(Math.random() * phrases.length);
+      textEl.textContent = phrases[randomIndex];
+    }
+
+    function handleClick() {
       textEl.classList.add("hidden");
 
       setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * phrases.length);
-        const selected = phrases[randomIndex];
+        if (!started) {
+          fadeInAudio(audio);
+          textEl.classList.add("active");
+          started = true;
+        }
 
-        textEl.textContent = selected;
-        textEl.classList.add("active");
-
+        randomizeText();
         textEl.classList.remove("hidden");
-
-        fadeInAudio(audio);
-      }, 500);
-
-      textEl.removeEventListener("click", startExperience);
+      }, 300);
     }
 
-    textEl.addEventListener("click", startExperience);
+    // Click ovunque nella pagina
+    document.body.addEventListener("click", handleClick);
   </script>
 </body>
 </html>
