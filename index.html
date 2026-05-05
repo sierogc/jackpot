@@ -3,35 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jackpot</title>
+  <title>Random Text + Audio</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       background-color: black;
+    }
+
+    /* Contenitore centrato */
+    body {
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Stato iniziale */
     #text {
+      position: absolute;
       color: white;
       font-size: clamp(10px, 2vw, 18px);
       text-align: center;
       cursor: pointer;
       font-family: "Times New Roman", Times, serif;
       opacity: 1;
-      transform: translateY(20vh);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      top: 65%; /* più in basso del centro */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease, top 0.4s ease, transform 0.4s ease;
     }
 
-    /* Stato attivo: CENTRATO, GRANDE, SF PRO */
+    /* Stato attivo: centro perfetto */
     .active {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif !important;
       font-size: clamp(48px, 10vw, 110px);
-      transform: translateY(0); /* perfettamente al centro */
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: default;
     }
 
     .hidden {
